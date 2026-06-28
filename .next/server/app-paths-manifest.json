@@ -1,7 +1,7 @@
 {
   "/(auth)/login/page": "app/(auth)/login/page.js",
-  "/(app)/match/page": "app/(app)/match/page.js",
-  "/(app)/stores/[storeId]/reserve/page": "app/(app)/stores/[storeId]/reserve/page.js",
+  "/(app)/mypage/page": "app/(app)/mypage/page.js",
   "/(app)/stores/page": "app/(app)/stores/page.js",
-  "/(app)/mypage/page": "app/(app)/mypage/page.js"
+  "/(app)/stores/[storeId]/reserve/page": "app/(app)/stores/[storeId]/reserve/page.js",
+  "/(app)/match/page": "app/(app)/match/page.js"
 }
