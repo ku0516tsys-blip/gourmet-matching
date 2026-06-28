@@ -21,6 +21,11 @@ export default function BottomNav() {
           {item.label}
         </Link>
       ))}
+      <Link href="/profile"
+        className={`flex-1 flex flex-col items-center py-2 text-xs gap-1 ${pathname.startsWith('/profile') ? 'text-pink-500' : 'text-gray-400'}`}>
+        <span className="text-xl">⚙️</span>
+        設定
+      </Link>
     </nav>
   )
 }
