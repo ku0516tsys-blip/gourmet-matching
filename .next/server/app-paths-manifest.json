@@ -1,0 +1,10 @@
+{
+  "/(auth)/login/page": "app/(auth)/login/page.js",
+  "/(app)/match/page": "app/(app)/match/page.js",
+  "/(app)/stores/page": "app/(app)/stores/page.js",
+  "/(app)/chat/[matchId]/page": "app/(app)/chat/[matchId]/page.js",
+  "/(app)/mypage/page": "app/(app)/mypage/page.js",
+  "/(app)/chat/page": "app/(app)/chat/page.js",
+  "/(app)/stores/[storeId]/reserve/page": "app/(app)/stores/[storeId]/reserve/page.js",
+  "/(app)/notif/page": "app/(app)/notif/page.js"
+}

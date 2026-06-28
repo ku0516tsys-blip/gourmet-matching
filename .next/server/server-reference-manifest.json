@@ -1,0 +1,14 @@
+{
+  "node": {
+    "ea2ba661317d5f6ed5d0ac1a93e061cb803a8567": {
+      "workers": {
+        "app/(app)/mypage/page": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2FUsers%2Ftoshiyasuarai%2F%E3%82%AF%E3%82%99%E3%83%AB%E3%83%A1%E3%83%9E%E3%83%83%E3%83%81%E3%83%B3%E3%82%AF%E3%82%99%2Fsrc%2Fapp%2F(app)%2Fmypage%2Fpage.tsx%22%2C%5B%22%24%24ACTION_0%22%5D%5D%5D&__client_imported__=!"
+      },
+      "layer": {
+        "app/(app)/mypage/page": "rsc"
+      }
+    }
+  },
+  "edge": {},
+  "encryptionKey": "4W67STKuUA+p+DTZa17IQZoYbsc/w1VS2cIXjRSsCPI="
+}
