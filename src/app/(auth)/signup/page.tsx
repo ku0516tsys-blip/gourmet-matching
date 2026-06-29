@@ -1,68 +1,81 @@
 'use client'
 import { useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
+import { createClient } from '@/lib/supabase/client'
+
+type DoneState = 'sent' | 'already_exists'
 
 export default function SignupPage() {
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [done, setDone] = useState(false)
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [done, setDone] = useState<DoneState | null>(null)
   const supabase = createClient()
 
   async function handleSignup(e: React.FormEvent) {
     e.preventDefault()
+    setLoading(true)
     setError('')
-    const { error } = await supabase.auth.signUp({ email, password })
-    if (error) {
-      if (error.message.includes('password')) {
-        setError('パスワードは6文字以上にしてください。')
-      } else {
-        setError('登録に失敗しました。もう一度お試しください。')
-      }
-      return
-    }
-    setDone(true)
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { name } },
+    })
+    setLoading(false)
+    if (error) { setError(error.message); return }
+    const alreadyExists = data.user?.identities?.length === 0
+    setDone(alreadyExists ? 'already_exists' : 'sent')
   }
 
-  if (done) return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 to-orange-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-sm text-center">
-        <div className="text-5xl mb-4">📧</div>
-        <h2 className="text-xl font-bold mb-2">メールを送信しました</h2>
-        <p className="text-gray-500 text-sm mb-4">確認メールのリンクをクリックして登録完了です</p>
-        <p className="text-gray-400 text-xs mb-6">※すでに登録済みの場合はログインしてください</p>
-        <Link href="/login" className="block w-full text-center bg-gradient-to-r from-pink-500 to-orange-400 text-white rounded-lg py-3 font-semibold">
-          ログインはこちら
-        </Link>
-      </div>
+  if (done === 'already_exists') return (
+    <div className="min-h-screen flex flex-col items-center justify-center bg-white px-6 text-center gap-4">
+      <div className="text-5xl">⚠️</div>
+      <h2 className="text-xl font-bold">このメールアドレスはすでに登録済みです</h2>
+      <p className="text-sm text-gray-500">ログインするか、パスワードをお忘れの場合はリセットしてください。</p>
+      <Link href="/login"
+        className="w-full max-w-xs block text-center bg-gradient-to-r from-[#e8510a] to-[#ff8c42] text-white font-bold py-4 rounded-xl">
+        ログインへ
+      </Link>
+    </div>
+  )
+
+  if (done === 'sent') return (
+    <div className="min-h-screen flex flex-col items-center justify-center bg-white px-6 text-center gap-4">
+      <div className="text-5xl">📬</div>
+      <h2 className="text-xl font-bold">確認メールを送りました</h2>
+      <p className="text-sm text-gray-500">{email} に届いたリンクをクリックして登録を完了してください。</p>
+      <Link href="/login" className="text-[#e8510a] text-sm font-semibold">ログインへ</Link>
     </div>
   )
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 to-orange-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-sm">
-        <h1 className="text-2xl font-bold text-center mb-2">🍽 GourMeet</h1>
-        <p className="text-gray-500 text-center text-sm mb-6">新規登録</p>
-        {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-3 mb-4">
-            <p className="text-red-600 text-sm">{error}</p>
-          </div>
-        )}
-        <form onSubmit={handleSignup} className="space-y-4">
-          <input type="email" placeholder="メールアドレス" value={email}
-            onChange={e => setEmail(e.target.value)}
-            className="w-full border rounded-lg px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-pink-300" required />
-          <input type="password" placeholder="パスワード（6文字以上）" value={password}
-            onChange={e => setPassword(e.target.value)}
-            className="w-full border rounded-lg px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-pink-300" required />
-          <button type="submit"
-            className="w-full bg-gradient-to-r from-pink-500 to-orange-400 text-white rounded-lg py-3 font-semibold">
-            登録する
+    <div className="min-h-screen flex flex-col items-center justify-center bg-white px-6">
+      <div className="w-full max-w-sm">
+        <div className="text-center mb-8">
+          <div className="text-5xl mb-3">🍽</div>
+          <h1 className="text-3xl font-black"><span className="text-[#e8510a]">Gour</span>Meet</h1>
+          <p className="text-sm text-gray-400 mt-1">食で、つながろう</p>
+        </div>
+        <form onSubmit={handleSignup} className="flex flex-col gap-3">
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl px-4 py-3">{error}</div>
+          )}
+          <input type="text" placeholder="お名前" value={name} onChange={e => setName(e.target.value)} required
+            className="border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#e8510a] transition-colors" />
+          <input type="email" placeholder="メールアドレス" value={email} onChange={e => setEmail(e.target.value)} required
+            className="border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#e8510a] transition-colors" />
+          <input type="password" placeholder="パスワード（8文字以上）" value={password} onChange={e => setPassword(e.target.value)} required minLength={8}
+            className="border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#e8510a] transition-colors" />
+          <button type="submit" disabled={loading}
+            className="bg-gradient-to-r from-[#e8510a] to-[#ff8c42] text-white font-bold py-4 rounded-xl mt-2 disabled:opacity-50">
+            {loading ? '登録中…' : '無料で始める 🎉'}
           </button>
         </form>
-        <p className="text-center text-sm text-gray-500 mt-4">
-          すでにアカウントがある方は <Link href="/login" className="text-pink-500 font-semibold">ログイン</Link>
+        <p className="text-center text-sm text-gray-400 mt-6">
+          すでにアカウントをお持ちの方は{' '}
+          <Link href="/login" className="text-[#e8510a] font-semibold">ログイン</Link>
         </p>
       </div>
     </div>
