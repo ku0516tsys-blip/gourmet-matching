@@ -12,8 +12,16 @@ export default function SignupPage() {
 
   async function handleSignup(e: React.FormEvent) {
     e.preventDefault()
+    setError('')
     const { error } = await supabase.auth.signUp({ email, password })
-    if (error) { setError(error.message); return }
+    if (error) {
+      if (error.message.includes('password')) {
+        setError('パスワードは6文字以上にしてください。')
+      } else {
+        setError('登録に失敗しました。もう一度お試しください。')
+      }
+      return
+    }
     setDone(true)
   }
 
@@ -21,8 +29,12 @@ export default function SignupPage() {
     <div className="min-h-screen bg-gradient-to-br from-pink-50 to-orange-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-sm text-center">
         <div className="text-5xl mb-4">📧</div>
-        <h2 className="text-xl font-bold mb-2">確認メールを送信しました</h2>
-        <p className="text-gray-500 text-sm">メールのリンクをクリックして登録完了です</p>
+        <h2 className="text-xl font-bold mb-2">メールを送信しました</h2>
+        <p className="text-gray-500 text-sm mb-4">確認メールのリンクをクリックして登録完了です</p>
+        <p className="text-gray-400 text-xs mb-6">※すでに登録済みの場合はログインしてください</p>
+        <Link href="/login" className="block w-full text-center bg-gradient-to-r from-pink-500 to-orange-400 text-white rounded-lg py-3 font-semibold">
+          ログインはこちら
+        </Link>
       </div>
     </div>
   )
@@ -32,7 +44,11 @@ export default function SignupPage() {
       <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-sm">
         <h1 className="text-2xl font-bold text-center mb-2">🍽 GourMeet</h1>
         <p className="text-gray-500 text-center text-sm mb-6">新規登録</p>
-        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-3 mb-4">
+            <p className="text-red-600 text-sm">{error}</p>
+          </div>
+        )}
         <form onSubmit={handleSignup} className="space-y-4">
           <input type="email" placeholder="メールアドレス" value={email}
             onChange={e => setEmail(e.target.value)}
