@@ -1,38 +1,58 @@
-import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
+import StoreCard from '@/components/StoreCard'
 
 export default async function StoresPage() {
   const supabase = createClient()
-  const { data: stores } = await supabase.from('stores').select('*').order('rating', { ascending: false })
+  const { data: newStores } = await supabase
+    .from('stores')
+    .select('*')
+    .eq('is_new', true)
+    .order('created_at', { ascending: false })
+    .limit(5)
+
+  const { data: hiddenStores } = await supabase
+    .from('stores')
+    .select('*')
+    .eq('is_hidden_gem', true)
+    .limit(5)
 
   return (
-    <div className="p-4">
-      <h1 className="text-xl font-bold mb-4">🍽 おすすめのお店</h1>
-      <div className="space-y-4">
-        {(stores || []).map(store => (
-          <div key={store.id} className="bg-white rounded-xl shadow p-4">
-            <div className="flex justify-between items-start">
-              <div className="flex-1">
-                <div className="flex gap-2 mb-1">
-                  {store.is_new && <span className="text-xs bg-pink-100 text-pink-600 px-2 py-0.5 rounded-full">NEW</span>}
-                  {store.is_hidden_gem && <span className="text-xs bg-purple-100 text-purple-600 px-2 py-0.5 rounded-full">穴場</span>}
-                </div>
-                <h2 className="font-bold">{store.name}</h2>
-                <p className="text-sm text-gray-500 mt-1">{store.area} · {store.nearest_station}</p>
-                <p className="text-sm text-gray-600 mt-2">{store.description}</p>
-              </div>
-              <div className="text-right ml-4">
-                <div className="text-yellow-500 font-bold">★ {store.rating}</div>
-                <div className="text-xs text-gray-500 mt-1">¥{store.budget_min?.toLocaleString()}〜</div>
-              </div>
-            </div>
-            <Link href={`/stores/${store.id}/reserve`}
-              className="mt-3 block w-full text-center bg-gradient-to-r from-pink-500 to-orange-400 text-white rounded-lg py-2 text-sm font-semibold">
-              予約する
-            </Link>
-          </div>
+    <div className="pb-4">
+      <div className="bg-white px-5 py-4 flex items-center justify-between border-b border-gray-100">
+        <div className="text-xl font-black text-[#e8510a]">Gour<span className="text-gray-800">Meet</span></div>
+        <Link href="/stores/map" className="w-9 h-9 rounded-full bg-[#f5f0eb] flex items-center justify-center text-lg">🗺</Link>
+      </div>
+
+      <div className="bg-white px-5 py-3">
+        <div className="flex items-center gap-2 bg-[#f5f0eb] rounded-xl px-3 py-2.5">
+          <span>🔍</span>
+          <input className="bg-transparent flex-1 text-sm outline-none" placeholder="エリア・料理ジャンルで検索" />
+        </div>
+      </div>
+
+      <div className="flex gap-2 px-5 py-3 overflow-x-auto hide-scroll">
+        {['すべて', '🆕 新店舗', '🕵️ 穴場', '🍣 和食', '🍷 ワイン', '🍜 ラーメン'].map((t, i) => (
+          <button key={t} className={`whitespace-nowrap px-4 py-1.5 rounded-full text-xs border transition-colors ${i === 0 ? 'bg-[#e8510a] border-[#e8510a] text-white' : 'border-gray-200 bg-white text-gray-600'}`}>
+            {t}
+          </button>
         ))}
+      </div>
+
+      <div className="px-5 pt-2 pb-1 text-sm font-bold">🆕 今週オープンの新店舗</div>
+      <div className="flex flex-col gap-4 px-5">
+        {(newStores ?? []).map(store => <StoreCard key={store.id} store={store} />)}
+        {(!newStores || newStores.length === 0) && (
+          <div className="bg-white rounded-2xl p-8 text-center text-gray-400 text-sm">新店舗を準備中です</div>
+        )}
+      </div>
+
+      <div className="px-5 pt-4 pb-1 text-sm font-bold">🕵️ 知る人ぞ知る穴場</div>
+      <div className="flex flex-col gap-4 px-5">
+        {(hiddenStores ?? []).map(store => <StoreCard key={store.id} store={store} />)}
+        {(!hiddenStores || hiddenStores.length === 0) && (
+          <div className="bg-white rounded-2xl p-8 text-center text-gray-400 text-sm">穴場店舗を準備中です</div>
+        )}
       </div>
     </div>
   )
