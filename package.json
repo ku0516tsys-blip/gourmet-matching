@@ -11,12 +11,15 @@
   "dependencies": {
     "@supabase/ssr": "^0.5.1",
     "@supabase/supabase-js": "^2.45.4",
+    "@types/leaflet": "^1.9.21",
     "canvas": "^3.2.3",
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
+    "leaflet": "^1.9.4",
     "next": "14.2.16",
     "react": "^18",
     "react-dom": "^18",
+    "react-leaflet": "^4.2.1",
     "zustand": "^4.5.5"
   },
   "devDependencies": {
